@@ -1,179 +1,189 @@
-let secondes = 0;
-let timerElement = document.getElementById("score"); 
-let chrono = null
+const canvas = document.getElementById("pong");
+const ctx = canvas.getContext("2d");
+
+let score = {
+    secondes : 0,
+    timerElement : document.getElementById("score"), 
+    chrono : null
+}
+
+let scoreMaxElement = document.getElementById("scoreMax");
+let balle = {
+    x : canvas.width / 2,
+    y : 450,
+    xSpeed : 2,
+    ySpeed : 2 
+}
+
+let racket = {
+    xraq : canvas.width /2 -40,
+    yraq : 470,
+    largeurRaquette : 80,
+    hauteurRaquette : 15,
+    vitesse : 20
+}
+
+let rafId; 
+
 
 function tictictic(){
-    secondes++;
-    timerElement.innerHTML = "Score : " + secondes ;
+    score.secondes++;
+    score.timerElement.innerHTML = "Score : " + score.secondes ;
 }
 
 let startButton = document.getElementById("start");
 startButton.addEventListener("click", function(){
-    if (chrono !== null) {
-        clearInterval(chrono);
-        secondes = 0; 
-        timerElement.innerHTML = "Score : " + secondes ;
+    if (score.chrono !== null) {
+        clearInterval(score.chrono);
+        score.secondes = 0; 
+        score.timerElement.innerHTML = "Score : " + score.secondes ;
     }
-    chrono = window.setInterval(tictictic, 1000);
+    score.chrono = window.setInterval(tictictic, 1000);
+        gameOver = false;
+
     loop();
 });
 
+let rightButton = document.getElementById("right");
+rightButton.addEventListener("click", function(){
+    if(racket.xraq + racket.largeurRaquette < canvas.width) racket.xraq += racket.vitesse;
+});
 
-
+let leftButton = document.getElementById("left");
+leftButton.addEventListener("click", function(){
+    if(racket.xraq > 0) racket.xraq -= racket.vitesse;
+});
 
 document.addEventListener("keydown", (e) => {
     switch (e.key) {
         case "ArrowLeft":
-            // Déplacer vers la gauche (en évitant de sortir du canvas)
-            if (xraq > 0) xraq -= vitesse;
+            
+            if (racket.xraq > 0) racket.xraq -= racket.vitesse;
             break;
 
         case "ArrowRight":
-            // Déplacer vers la droite (en évitant de dépasser la largeur)
-            if (xraq + largeurRaquette < canvas.width) xraq += vitesse;
+            
+            if (racket.xraq + racket.largeurRaquette < canvas.width) racket.xraq += racket.vitesse;
             break;
 
         default:
-            // Pour toute autre touche, on ne fait rien
+            
             break;
     }
-    raquette(); // on redessine après le déplacement
+    drawRacket();
+    
 });
 
 
 
 
 
-
-const canvas = document.getElementById("pong");
-const ctx = canvas.getContext("2d");
-
-let x = 50;                      // position de la balle (axe des abscisses X)
-//const y = canvas.height / 2; 
-let y = 50;    // centrage vertical dans le canvas
-let xSpeed = 0.5; 
-let ySpeed = 0.5;                // vitesse de la balle
-let rafId; 
-
-let x1 = 70;
-let y1 = 70;
-
 function drawBall() {
-    
-
     ctx.fillStyle = "orange";
-    //dessin de la balle
     ctx.beginPath();
-    ctx.arc(x, y, 15, 0, Math.PI * 2);
+    ctx.arc(balle.x, balle.y, 15, 0, Math.PI * 2);
     ctx.fill();
 }
 
-
-let xraq = canvas.width /2 -40;  // position au centre horizontal de la raquette
-const yraq = 470; // position verticale fixe
-const largeurRaquette = 80;
-const hauteurRaquette = 15;
-let vitesse = 10;
-function raquette() {
-    //ctx.clearRect(0, 0, canvas.width, canvas.height); // efface le canvas
+function drawRacket() {
     ctx.fillStyle = "orange";
-    ctx.fillRect(xraq, yraq, largeurRaquette, hauteurRaquette); // dessine le carré
+    ctx.fillRect(racket.xraq, racket.yraq, racket.largeurRaquette, racket.hauteurRaquette);
 }
 
-
-
-
-document.addEventListener("keydown", (e) => {
-    switch (e.key) {
-        case "ArrowLeft":
-            // Déplacer vers la gauche (en évitant de sortir du canvas)
-            if (xraq > 0) xraq -= vitesse;
-            break;
-
-        case "ArrowRight":
-            // Déplacer vers la droite (en évitant de dépasser la largeur)
-            if (xraq + largeurRaquette < canvas.width) xraq += vitesse;
-            break;
-
-        default:
-            // Pour toute autre touche, on ne fait rien
-            break;
-    }
-    raquette(); 
-    console.log(xraq, yraq);// on redessine après le déplacement
-});
-
 function startDisplay(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // efface l'écran
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBall();
-    raquette();
+    drawRacket();
 }
 
 startDisplay();
 
-
 function update() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // efface l'écran
-    x += xSpeed;
-    y += ySpeed;
+    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+    balle.y += balle.ySpeed;
 
-     // rebonds sur les bords
-    if (x > canvas.width - 15 || x < 15){
-        xSpeed = -xSpeed;
-        xSpeed = xSpeed * 1.01;
-        ySpeed = ySpeed * 1.01;
-        console.log(ySpeed);
-        console.log(xSpeed);
+    if (balle.x > canvas.width - 15 || balle.x < 15){
+        balle.xSpeed = -balle.xSpeed;
+        balle.xSpeed = balle.xSpeed * 1.01;
+        balle.ySpeed = balle.ySpeed * 1.01;
+        console.log(balle.ySpeed);
+        console.log(balle.xSpeed);
     } 
 
-    if (y > canvas.height - 15 || y < 15 ){
-        ySpeed = -ySpeed;
-        ySpeed = ySpeed * 1.01;
-        xSpeed = xSpeed * 1.01;
-        console.log(ySpeed);
-        console.log(xSpeed);
+    if (balle.y > canvas.height - 15 || balle.y < 15 ){
+        balle.ySpeed = -balle.ySpeed;
+        balle.ySpeed = balle.ySpeed * 1.01;
+        balle.xSpeed = balle.xSpeed * 1.01;
+        console.log(balle.ySpeed);
+        console.log(balle.xSpeed);
     }
 
-    //a revoir / comprendre
-    if(y + 15 >= yraq && // bord inférieur de la balle atteint la raquette
-        y - 15 <= yraq + hauteurRaquette && // bord supérieur de la balle est au-dessus de la raquette
-        x + 15 >= xraq && // bord droit de la balle touche la raquette
-        x - 15 <= xraq + largeurRaquette // bord gauche de la balle touche la raquette
+    if(balle.y + 15 >= racket.yraq && 
+        balle.y - 15 <= racket.yraq + racket.hauteurRaquette &&
+        balle.x + 15 >= racket.xraq && 
+        balle.x - 15 <= racket.xraq + racket.largeurRaquette 
         ){
-        ySpeed = -ySpeed;
-        ySpeed = ySpeed * 1.01;
-        xSpeed = xSpeed * 1.01;
-        console.log(ySpeed);
-        console.log(xSpeed);
+        balle.ySpeed = -balle.ySpeed;
+        balle.ySpeed = balle.ySpeed * 1.01;
+        balle.xSpeed = balle.xSpeed * 1.01;
+        console.log(balle.ySpeed);
+        console.log(balle.xSpeed);
     }
 
-    if(y > yraq -15){
-        console.log("perdu");
-    }
+  
+
+if (balle.y > canvas.height - 15) {
+    console.log("perdu");
+    alert("Vous avez perdu ! Votre score est de " + score.secondes + " secondes.");
+
+    scoreMaxLocal();
+    cancelAnimationFrame(rafId);
+
+    clearInterval(score.chrono);
+    score.chrono = null;
+
+    resetGame();
+    score.timerElement.innerHTML = "Score : " + score.secondes;
+
+    startDisplay(); 
+    gameOver = true; 
+}
+}
+
+function resetGame() {
+    balle.x = canvas.width / 2;
+    balle.y = 450;
+    balle.xSpeed = 2;
+    balle.ySpeed = 2;
+    racket.xraq = canvas.width / 2 - 40;
+    racket.yraq = 470;
+    score.secondes = 0;
 }
 
 
 
+function scoreMaxLocal() {
+    let savedMax = localStorage.getItem("scoreMax");
+    if (savedMax === null || score.secondes > parseInt(savedMax)) {
+        scoreMax = score.secondes;
+        localStorage.setItem("scoreMax", scoreMax);
+    } else {
+        scoreMax = parseInt(savedMax);
+    }
+    scoreMaxElement.innerHTML = "Score max : " + scoreMax;
+}
 
+gameOver = false;
 function loop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // efface le canvas
+    if (gameOver) return; // arrête la boucle si le jeu est terminé
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     update();
     drawBall();
-    raquette();
+    drawRacket();
     rafId = requestAnimationFrame(loop);
-     // planifie la prochaine frame
 }
 
 // démarrer l'animation
 
 //loop();
-
-
-
-
-
-
-
-
-
