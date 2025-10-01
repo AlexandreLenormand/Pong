@@ -11,9 +11,12 @@ let scoreMaxElement = document.getElementById("scoreMax");
 let balle = {
     x : canvas.width / 2,
     y : 450,
-    xSpeed : 2,
-    ySpeed : 2 
+    ySpeed : 2,
+    xSpeed : 2
 }
+
+const maxYSpeed = 5;
+const maxXSpeed = 5;
 
 let racket = {
     xraq : canvas.width /2 -40,
@@ -98,22 +101,31 @@ function startDisplay(){
 
 startDisplay();
 
+
+
 function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); 
+    balle.x += balle.xSpeed;
     balle.y += balle.ySpeed;
+    const maxXSpeed = 5;
+    const maxYSpeed = 5;
 
+    if(balle.xSpeed > maxXSpeed) balle.xSpeed = 5;
+    if(balle.ySpeed > maxYSpeed) balle.ySpeed = 5;
+    if(balle.xSpeed < -maxXSpeed) balle.xSpeed = -5;
+    if(balle.ySpeed < -maxYSpeed) balle.ySpeed = -5;
     if (balle.x > canvas.width - 15 || balle.x < 15){
         balle.xSpeed = -balle.xSpeed;
-        balle.xSpeed = balle.xSpeed * 1.01;
-        balle.ySpeed = balle.ySpeed * 1.01;
+        balle.xSpeed = balle.xSpeed * 1.03;
+        balle.ySpeed = balle.ySpeed * 1.03;
         console.log(balle.ySpeed);
         console.log(balle.xSpeed);
     } 
 
     if (balle.y > canvas.height - 15 || balle.y < 15 ){
         balle.ySpeed = -balle.ySpeed;
-        balle.ySpeed = balle.ySpeed * 1.01;
-        balle.xSpeed = balle.xSpeed * 1.01;
+        balle.ySpeed = balle.ySpeed * 1.03;
+        balle.xSpeed = balle.xSpeed * 1.03;
         console.log(balle.ySpeed);
         console.log(balle.xSpeed);
     }
@@ -124,8 +136,8 @@ function update() {
         balle.x - 15 <= racket.xraq + racket.largeurRaquette 
         ){
         balle.ySpeed = -balle.ySpeed;
-        balle.ySpeed = balle.ySpeed * 1.01;
-        balle.xSpeed = balle.xSpeed * 1.01;
+        balle.ySpeed = balle.ySpeed * 1.03;
+        balle.xSpeed = balle.xSpeed * 1.03;
         console.log(balle.ySpeed);
         console.log(balle.xSpeed);
     }
@@ -153,14 +165,22 @@ if (balle.y > canvas.height - 15) {
 function resetGame() {
     balle.x = canvas.width / 2;
     balle.y = 450;
-    balle.xSpeed = 2;
-    balle.ySpeed = 2;
+    randomizeBallSpeed();
     racket.xraq = canvas.width / 2 - 40;
     racket.yraq = 470;
     score.secondes = 0;
+
 }
 
 
+function angleAleatoire() {
+    let angle = Math.random() * (Math.PI / 2) + Math.PI / 4;
+    
+    let speed = 3;  
+    
+    balle.xSpeed = speed * Math.cos(angle);
+    balle.ySpeed = -Math.abs(speed * Math.sin(angle)); 
+}
 
 function scoreMaxLocal() {
     let savedMax = localStorage.getItem("scoreMax");
@@ -175,7 +195,7 @@ function scoreMaxLocal() {
 
 gameOver = false;
 function loop() {
-    if (gameOver) return; // arrête la boucle si le jeu est terminé
+    if (gameOver) return; 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     update();
@@ -184,6 +204,3 @@ function loop() {
     rafId = requestAnimationFrame(loop);
 }
 
-// démarrer l'animation
-
-//loop();
