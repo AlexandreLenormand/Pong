@@ -1,2 +1,2 @@
 <h1>Pong Solo</h1>
-<p>Lien<a>https://alexandrelenormand.github.io/Pong</a></p>
+<p><a href = "https://alexandrelenormand.github.io/Pong">Lien</a></p>
